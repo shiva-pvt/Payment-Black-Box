@@ -30,13 +30,10 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Payment Black Box API", version="1.0.0", lifespan=lifespan)
 
-frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
-cors_origins = os.getenv("CORS_ORIGINS", frontend_url).split(",")
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=cors_origins,
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
