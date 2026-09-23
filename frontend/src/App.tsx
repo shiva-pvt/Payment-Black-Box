@@ -56,7 +56,7 @@ function App() {
 
   useEffect(() => {
     // Basic polling fallback could be managed here, but strictly MVP WS
-    const socket = new WebSocket(`${WS_URL}/ws`);
+    const socket = new WebSocket(WS_URL);
     socket.onopen = () => console.log('WS connected');
     socket.onerror = (e) => console.log('WS error - falling back to polling if configured', e);
     setWs(socket);
