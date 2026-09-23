@@ -1,4 +1,6 @@
 import os
+import logging
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -6,10 +8,27 @@ from database import engine, Base
 from routes import transactions, reconciliation, health
 from websocket_manager import manager
 
+# Configure production logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+)
+logger = logging.getLogger(__name__)
+
 # Create tables
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Payment Black Box API")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: Validate DB Connection
+    try:
+        with engine.connect() as conn:
+            logger.info("Database connection successfully established.")
+    except Exception as e:
+        logger.error(f"Failed to connect to database: {e}")
+    yield
+
+app = FastAPI(title="Payment Black Box API", version="1.0.0", lifespan=lifespan)
 
 frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
 cors_origins = os.getenv("CORS_ORIGINS", frontend_url).split(",")
