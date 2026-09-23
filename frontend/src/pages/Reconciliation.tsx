@@ -1,3 +1,4 @@
+import { API_URL, WS_URL } from "../config";
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
@@ -6,12 +7,12 @@ export default function Reconciliation() {
   const [cases, setCases] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:8000/reconciliation').then(res => setCases(res.data));
+    axios.get(`${API_URL}/reconciliation`).then(res => setCases(res.data));
   }, []);
 
   const resolve = async (id: int) => {
-    await axios.post(`http://localhost:8000/reconciliation/${id}/resolve?action=MANUAL_REVIEW`);
-    const res = await axios.get('http://localhost:8000/reconciliation');
+    await axios.post(`${API_URL}/reconciliation/${id}/resolve?action=MANUAL_REVIEW`);
+    const res = await axios.get(`${API_URL}/reconciliation`);
     setCases(res.data);
   };
 

@@ -1,3 +1,4 @@
+import { API_URL, WS_URL } from "../config";
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
@@ -6,12 +7,20 @@ export default function TransactionList() {
   const [transactions, setTransactions] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:8000/transactions').then(res => setTransactions(res.data));
+    axios.get(`${API_URL}/transactions`).then(res => setTransactions(res.data));
   }, []);
 
   const createTest = async (scenario: string) => {
-    await axios.post('http://localhost:8000/transactions/simulate', { scenario });
-    const res = await axios.get('http://localhost:8000/transactions');
+    let idempotency_key = null;
+    if (scenario === 'duplicate') {
+       // We use a fixed key to demonstrate duplicate block
+       idempotency_key = "IDEMP-DEMO-999";
+       // First request
+       await axios.post(`${API_URL}/transactions/simulate`, { scenario, idempotency_key });
+    }
+    
+    await axios.post(`${API_URL}/transactions/simulate`, { scenario, idempotency_key });
+    const res = await axios.get(`${API_URL}/transactions`);
     setTransactions(res.data);
   };
 
@@ -20,17 +29,19 @@ export default function TransactionList() {
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold text-gray-900">Transactions</h1>
         <div className="space-x-2">
-          <select id="scenario" className="border border-gray-300 rounded px-2 py-1 text-sm">
-            <option value="success">Success</option>
+          <select id="scenario" className="border border-gray-300 rounded px-2 py-1 text-sm bg-white">
+            <option value="success">Successful Payment</option>
             <option value="timeout">Network Timeout</option>
-            <option value="debit_without_credit">Debit without Credit</option>
+            <option value="debit_without_credit">Debit Confirmed — Credit Missing</option>
+            <option value="merchant_timeout">Merchant Response Timeout</option>
+            <option value="duplicate">Duplicate Payment</option>
             <option value="settlement_delay">Settlement Delayed</option>
             <option value="reversal">Reversal Pending</option>
-            <option value="unknown">Unknown State</option>
+            <option value="unknown">Unknown / Uncertain Transaction</option>
           </select>
           <button 
             onClick={() => createTest((document.getElementById('scenario') as HTMLSelectElement).value)}
-            className="bg-blue-600 text-white px-3 py-1 rounded text-sm font-medium hover:bg-blue-700"
+            className="bg-gray-800 text-white px-3 py-1 rounded text-sm font-medium hover:bg-gray-900 shadow-sm"
           >
             Create Test Transaction
           </button>

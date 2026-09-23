@@ -1,3 +1,4 @@
+import { API_URL, WS_URL } from "../config";
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
@@ -5,7 +6,7 @@ export default function PaymentHealth() {
   const [health, setHealth] = useState<any>(null);
 
   useEffect(() => {
-    axios.get('http://localhost:8000/health').then(res => setHealth(res.data));
+    axios.get(`${API_URL}/health`).then(res => setHealth(res.data));
   }, []);
 
   if (!health) return <div>Loading...</div>;

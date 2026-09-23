@@ -1,3 +1,4 @@
+import { API_URL, WS_URL } from "../config";
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
@@ -9,7 +10,7 @@ export default function TransactionDetail() {
   const ws = useContext(WSContext);
 
   useEffect(() => {
-    axios.get(`http://localhost:8000/transactions/${id}`).then(res => setTx(res.data));
+    axios.get(`${API_URL}/transactions/${id}`).then(res => setTx(res.data));
   }, [id]);
 
   useEffect(() => {
@@ -78,6 +79,34 @@ export default function TransactionDetail() {
           </ul>
         </div>
       </div>
+      
+      {tx.status === 'UNCERTAIN' || tx.status === 'RECONCILIATION_REQUIRED' || tx.status === 'FAILED' ? (
+        <div className="bg-red-50 shadow-sm border border-red-200 rounded-lg p-6 mt-6">
+          <h2 className="text-lg font-medium text-red-900 mb-2">Root Cause Analysis</h2>
+          <p className="text-sm text-red-800 font-medium">Primary Issue: <span className="font-normal">{tx.events[tx.events.length - 1]?.event_type}</span></p>
+          <p className="text-sm text-red-800 font-medium mt-1">Observed Evidence:</p>
+          <ul className="list-disc pl-5 text-sm text-red-800">
+            <li>Transaction halted at state: {tx.status}</li>
+            <li>Last recorded system: {tx.events[tx.events.length - 1]?.source}</li>
+            {tx.events[tx.events.length - 1]?.error_code && <li>Error Code: {tx.events[tx.events.length - 1].error_code}</li>}
+          </ul>
+          <p className="text-sm text-red-800 font-medium mt-2">Impact: <span className="font-normal">Payment cannot safely be marked completed.</span></p>
+          
+          {(tx.status === 'UNCERTAIN' || tx.status === 'RECONCILIATION_REQUIRED') && (
+            <div className="mt-4">
+              <button 
+                onClick={async () => {
+                   await axios.post(`${API_URL}/transactions/${id}/recovery`);
+                   alert("Recovery workflow initiated. Watch timeline for updates.");
+                }}
+                className="bg-red-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-red-700"
+              >
+                Initiate Simulated Recovery Workflow
+              </button>
+            </div>
+          )}
+        </div>
+      ) : null}
     </div>
   );
 }
