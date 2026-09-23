@@ -22,6 +22,7 @@ class TransactionBase(BaseModel):
     customer_id: str
     merchant_id: str
     idempotency_key: Optional[str] = None
+    scenario: Optional[str] = None
 
 class TransactionCreate(TransactionBase):
     pass
@@ -44,7 +45,7 @@ class TransactionDetailResponse(TransactionResponse):
         from_attributes = True
 
 class SimulationRequest(BaseModel):
-    scenario: str # "success", "timeout", "debit_without_credit", "duplicate", "settlement_delay", "reversal", "unknown"
+    scenario: str # "success", "timeout", "debit_without_credit", "duplicate", "settlement_delay", "reversal", "unknown", "merchant_timeout"
     idempotency_key: Optional[str] = None
     
 class ReconciliationCaseBase(BaseModel):
@@ -57,5 +58,17 @@ class ReconciliationCaseBase(BaseModel):
     created_at: datetime
     status: str
     
+    class Config:
+        from_attributes = True
+
+class RecoveryActionBase(BaseModel):
+    id: int
+    transaction_id: str
+    action_type: str
+    status: str
+    created_at: datetime
+    resolved_at: Optional[datetime] = None
+    metadata_json: Optional[Dict[str, Any]] = None
+
     class Config:
         from_attributes = True

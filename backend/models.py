@@ -19,6 +19,8 @@ class Transaction(Base):
     merchant_id = Column(String, nullable=False)
     status = Column(String, nullable=False, default="INITIATED")
     
+    scenario = Column(String, nullable=True) # To track which demo scenario generated this
+    
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
@@ -57,3 +59,14 @@ class ReconciliationCase(Base):
     recommended_action = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     status = Column(String, default="OPEN") # OPEN, RESOLVED
+
+class RecoveryAction(Base):
+    __tablename__ = "recovery_actions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    transaction_id = Column(String, ForeignKey("transactions.id"), nullable=False)
+    action_type = Column(String, nullable=False) # e.g. "REVERSE_DEBIT", "FORCE_COMPLETE"
+    status = Column(String, default="PENDING") # PENDING, SUCCESS, FAILED
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    resolved_at = Column(DateTime(timezone=True), nullable=True)
+    metadata_json = Column(JSON, nullable=True)
