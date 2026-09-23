@@ -84,5 +84,34 @@ Once the backend is running, the interactive OpenAPI documentation is available 
 
 ## Limitations
 
-- The payment provider in this MVP is simulated. No real funds are moved.
-- Machine Learning anomaly detection is outside the scope of this core product layer.
+- **"This prototype simulates payment processing and recovery workflows. It does not process real financial transactions or perform real bank/UPI reversals."**
+- Machine Learning anomaly detection is outside the scope of this core product layer, which strictly utilizes an explicit state machine for deterministic root-cause analysis.
+
+## Production Deployment (Railway)
+
+This repository is optimized for deployment on [Railway](https://railway.app) as a monorepo. 
+
+**Steps to deploy:**
+1. **Create a New Project** on Railway.
+2. **Add Services**:
+   - Add a **PostgreSQL** database service.
+   - Add a **Redis** service.
+3. **Deploy the Backend**:
+   - Create a new service from your GitHub repo.
+   - Go to Settings > Build > Root Directory and set it to `/backend`.
+   - Railway will automatically detect the Python environment.
+   - Add Environment Variables:
+     - `DATABASE_URL` (Reference from PostgreSQL service)
+     - `REDIS_URL` (Reference from Redis service)
+     - `FRONTEND_URL` (URL of your deployed frontend, e.g., `https://payment-frontend.up.railway.app`)
+     - `CORS_ORIGINS` (Same as FRONTEND_URL, or a comma-separated list of allowed domains)
+4. **Deploy the Frontend**:
+   - Create another new service from the same GitHub repo.
+   - Go to Settings > Build > Root Directory and set it to `/frontend`.
+   - Railway will automatically run `npm run build`. 
+   - Ensure the service uses the `frontend/Dockerfile` for the custom Nginx server, or set the start command explicitly.
+   - Add Environment Variables:
+     - `VITE_API_URL` (URL of your deployed backend, e.g., `https://payment-backend.up.railway.app`)
+     - `VITE_WS_URL` (WebSocket URL of your deployed backend, e.g., `wss://payment-backend.up.railway.app/ws`)
+
+Once deployed, the frontend will seamlessly communicate with the production API, database, and Redis cache.

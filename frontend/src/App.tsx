@@ -1,12 +1,14 @@
+import { API_URL, WS_URL } from "./config";
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import { Activity, LayoutDashboard, List, ShieldAlert, HeartPulse, Settings } from 'lucide-react';
+import { Activity, LayoutDashboard, List, ShieldAlert, HeartPulse, Code2 } from 'lucide-react';
 
 import Dashboard from './pages/Dashboard';
 import TransactionList from './pages/TransactionList';
 import TransactionDetail from './pages/TransactionDetail';
 import Reconciliation from './pages/Reconciliation';
 import PaymentHealth from './pages/PaymentHealth';
+import ApiDocs from './pages/ApiDocs';
 
 export const WSContext = React.createContext<WebSocket | null>(null);
 
@@ -34,6 +36,10 @@ function Sidebar() {
           <HeartPulse className="mr-3 h-5 w-5 text-gray-400" />
           Payment Health
         </Link>
+        <Link to="/api-docs" className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-50 hover:text-gray-900">
+          <Code2 className="mr-3 h-5 w-5 text-gray-400" />
+          API Docs
+        </Link>
       </nav>
       <div className="p-4 border-t border-gray-200 bg-gray-50">
         <div className="flex items-center">
@@ -49,8 +55,10 @@ function App() {
   const [ws, setWs] = React.useState<WebSocket | null>(null);
 
   useEffect(() => {
-    const socket = new WebSocket('ws://localhost:8000/ws');
+    // Basic polling fallback could be managed here, but strictly MVP WS
+    const socket = new WebSocket(`${WS_URL}/ws`);
     socket.onopen = () => console.log('WS connected');
+    socket.onerror = (e) => console.log('WS error - falling back to polling if configured', e);
     setWs(socket);
     return () => socket.close();
   }, []);
@@ -67,6 +75,7 @@ function App() {
               <Route path="/transactions/:id" element={<TransactionDetail />} />
               <Route path="/reconciliation" element={<Reconciliation />} />
               <Route path="/health" element={<PaymentHealth />} />
+              <Route path="/api-docs" element={<ApiDocs />} />
             </Routes>
           </main>
         </div>

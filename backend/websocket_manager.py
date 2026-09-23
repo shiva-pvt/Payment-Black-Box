@@ -1,11 +1,17 @@
+import os
 from typing import List, Dict
 import json
 from fastapi import WebSocket
 
+REDIS_URL = os.getenv("REDIS_URL")
+
 class ConnectionManager:
     def __init__(self):
-        # We store active websocket connections
         self.active_connections: List[WebSocket] = []
+        self.redis = None
+        if REDIS_URL:
+            import redis.asyncio as redis
+            self.redis = redis.from_url(REDIS_URL)
 
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
