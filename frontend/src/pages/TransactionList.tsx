@@ -9,7 +9,7 @@ export default function TransactionList() {
   const ws = useContext(WSContext);
 
   useEffect(() => {
-    axios.get("/transactions").then(res => setTransactions(res.data));
+    axios.get(`${API_URL}/transactions`).then(res => setTransactions(res.data));
   }, []);
 
   useEffect(() => {
@@ -32,10 +32,10 @@ export default function TransactionList() {
     let idempotency_key = null;
     if (scenario === 'duplicate') {
        idempotency_key = "IDEMP-DEMO-999";
-       await axios.post("/transactions/simulate", { scenario, idempotency_key });
+       await axios.post(`${API_URL}/transactions/simulate`, { scenario, idempotency_key });
     }
-    await axios.post("/transactions/simulate", { scenario, idempotency_key });
-    const res = await axios.get("/transactions");
+    await axios.post(`${API_URL}/transactions/simulate`, { scenario, idempotency_key });
+    const res = await axios.get(`${API_URL}/transactions`);
     setTransactions(res.data);
   };
 
@@ -80,7 +80,7 @@ export default function TransactionList() {
                   {tx.id}
                   {tx.scenario && <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">TEST</span>}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">₹{tx.amount}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">?{tx.amount}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                     ${tx.status === 'COMPLETED' ? 'bg-green-100 text-green-800' : 
