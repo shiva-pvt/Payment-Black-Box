@@ -89,7 +89,7 @@ export default function TransactionDetail() {
                     <div className="min-w-0 flex-1 pt-1 flex justify-between space-x-4">
                       <div>
                         <p className="text-sm text-gray-500">{event.event_id} - {event.source}</p>
-                        <p className="text-sm font-medium text-gray-900">{event.event_type} <span className="text-gray-400">-> {event.new_state}</span></p>
+                        <p className="text-sm font-medium text-gray-900">{event.event_type} <span className="text-gray-400">-&gt; {event.new_state}</span></p>
                         {event.error_code && (
                           <p className="text-sm text-red-500 font-medium mt-1">Error: {event.error_code}</p>
                         )}
