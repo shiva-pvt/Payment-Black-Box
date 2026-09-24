@@ -1,7 +1,7 @@
 export default async function handler(req, res) {
   // Extract the original path from the request URL
   const targetPath = req.url.replace(/^\/api/, '');
-  const url = "https://payment-black-box-production.up.railway.app${targetPath}";
+  const url = `https://payment-black-box-production.up.railway.app${targetPath}`;
   
   try {
     const options = {
