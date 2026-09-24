@@ -80,17 +80,17 @@ export default function TransactionList() {
                   {tx.id}
                   {tx.scenario && <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">TEST</span>}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">?{tx.amount}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">₹{tx.amount}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <span className={"px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                  <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                     ${tx.status === 'COMPLETED' ? 'bg-green-100 text-green-800' : 
                       tx.status === 'FAILED' ? 'bg-red-100 text-red-800' : 
-                      (tx.status === 'UNCERTAIN' || tx.status === 'RECONCILIATION_REQUIRED') ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800'}"}>
+                      (tx.status === 'UNCERTAIN' || tx.status === 'RECONCILIATION_REQUIRED') ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800'}`}>
                     {tx.status}
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <Link to={"/transactions/${tx.id}"} className="text-blue-600 hover:text-blue-900">View</Link>
+                  <Link to={`/transactions/${tx.id}`} className="text-blue-600 hover:text-blue-900">View</Link>
                 </td>
               </tr>
             ))}
