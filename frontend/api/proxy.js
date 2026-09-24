@@ -1,22 +1,29 @@
 export default async function handler(req, res) {
-  // Extract the original path from the request URL
+  // Original URL in Vercel is req.url
+  // For a request to /api/transactions/123, req.url will be /api/transactions/123
+  // Strip the /api prefix
   const targetPath = req.url.replace(/^\/api/, '');
-  const url = `https://payment-black-box-production.up.railway.app${targetPath}`;
   
+  // Clean URL construction
+  const url = `https://payment-black-box-production.up.railway.app${targetPath}`;
+
   try {
     const options = {
       method: req.method,
-      headers: {
-        'Content-Type': req.headers['content-type'] || 'application/json'
-      }
+      headers: {}
     };
+    
+    if (req.headers['content-type']) {
+        options.headers['Content-Type'] = req.headers['content-type'];
+    } else {
+        options.headers['Content-Type'] = 'application/json';
+    }
+
     if (req.method !== 'GET' && req.method !== 'HEAD') {
       options.body = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
     }
     
     const response = await fetch(url, options);
-    
-    // Parse response
     const data = await response.text();
     let json;
     try {
